@@ -1,6 +1,6 @@
 # Puzzle Lineal con Búsqueda en Profundidad
 from arbol import Nodo
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 import os
 
@@ -48,13 +48,25 @@ def buscar_solucion_DFS(estado_inicial, solucion):
 @app.route('/calcular', methods=['POST'])
 
 def calcular():
-    estado_inicial = [4,2,3,1]
-    solucion = [1,2,3,4]
+    # Obtener datos del request
+    data = request.get_json()
+    estado_inicial = data.get('estado_inicial')
+    solucion = data.get('solucion')
+    
     nodo_solucion = buscar_solucion_DFS(estado_inicial, solucion)
+    if nodo_solucion is None:
+        return {
+            'estado_inicial': estado_inicial,
+            'estado_objetivo': solucion,
+            'pasos': [],
+            'total_pasos': 0,
+            'error': 'No se encontró solución para el estado inicial y objetivo dados.'
+        }, 404
+
     #Mostrar Resultado
     resultado = []
     nodo = nodo_solucion
-    while nodo.get_padre() != None:
+    while nodo.get_padre() is not None:
         resultado.append(nodo.get_datos())
         nodo = nodo.get_padre()
     
@@ -62,5 +74,20 @@ def calcular():
     resultado.reverse()
     print(resultado)
     
+    return {
+        'estado_inicial': estado_inicial,
+        'estado_objetivo': solucion,
+        'pasos': resultado,
+        'total_pasos': len(resultado)
+    }
+
+@app.route('/')
+def serve_index():
+    return send_from_directory('app', 'index.html')
+
+@app.route('/<path:path>')
+def serve_file(path):
+    return send_from_directory('app', path)
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')

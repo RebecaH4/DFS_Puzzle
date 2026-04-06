@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFS Puzzle Solver</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-white min-h-screen">
+    <div class="container mx-auto px-4 py-10 max-w-2xl">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-blue-900 mb-2">DFS Puzzle</h1>
+            <p class="text-blue-800">Resolvedor de puzzles con búsqueda en profundidad</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-blue-200">
+            <!-- Initial State Section -->
+            <div class="mb-10">
+                <h2 class="text-2xl font-bold text-blue-900 mb-5">Estado Inicial</h2>
+                <div class="bg-white rounded-lg p-6 border-2 border-blue-200">
+                    <div class="grid grid-cols-4 gap-3 mb-4">
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Posición 1</p>
+                            <select id="initial0" class="w-full rounded border border-blue-300 p-2 bg-blue-50">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Posición 2</p>
+                            <select id="initial1" class="w-full rounded border border-blue-300 p-2 bg-blue-50">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Posición 3</p>
+                            <select id="initial2" class="w-full rounded border border-blue-300 p-2 bg-blue-50">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Posición 4</p>
+                            <select id="initial3" class="w-full rounded border border-blue-300 p-2 bg-blue-50">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goal State Section -->
+            <div class="mb-10">
+                <h2 class="text-2xl font-bold text-blue-900 mb-5">Estado Objetivo</h2>
+                <div class="bg-white rounded-lg p-6 border-2 border-blue-200">
+                    <div class="grid grid-cols-4 gap-3 mb-4">
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Posición 1</p>
+                            <select id="goal0" class="w-full rounded border border-blue-300 p-2 bg-blue-50">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Posición 2</p>
+                            <select id="goal1" class="w-full rounded border border-blue-300 p-2 bg-blue-50">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Posición 3</p>
+                            <select id="goal2" class="w-full rounded border border-blue-300 p-2 bg-blue-50">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Posición 4</p>
+                            <select id="goal3" class="w-full rounded border border-blue-300 p-2 bg-blue-50">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3 justify-center mb-8">
+                <button id="solveBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg transition duration-200 shadow-lg">
+                    Resolver
+                </button>
+                <button id="clearBtn" class="bg-red-300 hover:bg-red-400 text-red-900 font-bold py-3 px-8 rounded-lg transition duration-200 shadow-lg">
+                    Limpiar
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loading" class="hidden flex justify-center items-center py-6">
+                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-600"></div>
+            </div>
+
+            <!-- Solution Steps Section -->
+            <div id="solutionContainer" class="hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-blue-900 mb-3">Solución</h2>
+                    <p class="text-blue-800 mb-4">
+                        Pasos necesarios: <span id="totalSteps" class="font-bold text-blue-950">0</span>
+                    </p>
+                </div>
+
+                <!-- Steps List -->
+                <ul id="stepsList" class="list-disc ml-6"></ul>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorContainer" class="hidden bg-red-200 border-l-4 border-red-600 p-4 rounded">
+                <p class="text-red-800 font-semibold">Error</p>
+                <p id="errorMessage" class="text-red-700"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
