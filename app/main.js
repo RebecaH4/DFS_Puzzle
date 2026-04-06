@@ -200,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearBtn = document.getElementById('clearBtn');
     if (clearBtn) {
         clearBtn.addEventListener('click', (event) => {
-            event.preventDefault();
             console.log('Botón Limpiar clicado: recargando página');
             alert('Limpiar: recargando página.');
             window.location.reload(true); // forzar recarga completa
